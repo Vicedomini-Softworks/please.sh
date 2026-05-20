@@ -8,9 +8,11 @@
 
 `please` is a shell function that makes your terminal more polite. Instead of just running `sudo command`, you now run `please command` and your terminal will:
 
-1. Say "🙏 asking nicely..." before running your command
-2. Say "✨ success!" if it works
-3. Say "❌ that didn't work" if it fails (with helpful tips)
+1. Say "⚠️ About to run: sudo ..." showing the exact command
+2. Say "✨ Success!" if it works or "❌ ..." with details if it fails
+3. Validates commands exist before running
+4. Blocks dangerous commands by default (like `rm`)
+5. Offers dry-run, confirmation, and timeout protection
 
 It's sudo, but with manners.
 
@@ -59,27 +61,45 @@ please apt update
 - **Clear feedback**: You always know if something worked or not
 - **Zero learning curve**: Just type `please` instead of `sudo`
 - **Meme potential**: Tell your friends you "ask nicely" before running sudo commands
-- **Lightweight**: It's 28 lines of bash. That's it.
+- **Lightweight**: Minimal shell function, zero dependencies
 
 ---
 
 ## 🤔 How does it work?
 
-It's literally just a shell function:
+It's literally just a shell function that:
+
+1. **Validates** your command exists
+2. **Secures** by checking allowlist/denylist
+3. **Previews** the sudo command: `⚠️ About to run: sudo apt update`
+4. **Protects** with dry-run, confirmation, and timeout options
+5. **Executes** safely with proper argument preservation
 
 ```bash
 please() {
-  echo "🙏 asking nicely..."
-  sudo "$@"
-  # ... friendly feedback ...
+  # Validates command exists
+  if ! command -v "${1%% *}" >/dev/null 2>&1; then ... fi
+  
+  # Checks denylist/allowlist for safety
+  if [ -n "$denylist" ] && echo "$denylist" | tr ',' '\n' | grep -qx "$cmd"; then ... fi
+  
+  # Shows: "⚠️ About to run: sudo apt update"
+  echo "⚠️ About to run: sudo $*"
+  
+  # Optional dry-run confirmation, timeout handling...
+  
+  sudo "$@"  # Safe argument forwarding with "$@"
+  # Returns proper exit code
 }
 ```
 
-The `"$@"` preserves all your arguments, so `please apt update` becomes `sudo apt update` under the hood.
+The `"$@"` preserves all your arguments, so `please apt update` becomes `sudo apt update` with perfect fidelity.
 
 ---
 
 ## 🛠️ Customization
+
+### Quick Message Customization
 
 Want to change the messages? Edit `~/.please.sh`:
 
@@ -90,6 +110,79 @@ please() {
   echo "🥺 *puppy eyes* Running with sudo..."
   sudo "$@" && echo "🎉 you're welcome" || echo "💀 oopsie"
 }
+```
+
+
+### Advanced Configuration with Safety Rules
+
+For **command restrictions, confirmations, and timeouts**, create `~/.please.config`:
+
+```bash
+# ~/.please.config - Safety rules for please.sh
+
+# Allow only specific commands (safer)
+PLEASE_ALLOWLIST="apt,systemctl,service"
+
+# Block dangerous commands
+PLEASE_DENYLIST="rm,dd,shred"
+
+# Always ask for confirmation
+PLEASE_CONFIRM=1
+
+# Enable dry-run mode by default
+PLEASE_DRYRUN=0
+
+# Timeout commands after 60 seconds
+PLEASE_TIMEOUT=60
+```
+
+Or use **environment variables** directly:
+
+```bash
+# Only allow specific commands
+export PLEASE_ALLOWLIST="apt,systemctl"
+
+# Always ask for confirmation
+export PLEASE_CONFIRM=1
+
+# Preview commands without executing
+export PLEASE_DRYRUN=1
+
+# Set a 30-second timeout
+export PLEASE_TIMEOUT=30
+```
+
+### Command Line Options
+
+```bash
+# Show command but don't execute
+please --dryrun apt update
+please -d apt update
+
+# Ask for confirmation before executing
+please --confirm apt install
+please -c apt install
+
+# Show help
+please --help
+```
+
+
+### Quick Command Examples
+
+```bash
+# Normal usage (original polite sudo)
+please ls -la
+
+# Preview without executing
+please --dryrun apt update
+
+# Require explicit confirmation
+please --confirm apt dist-upgrade
+
+# Enable confirm for all commands in session
+export PLEASE_CONFIRM=1
+please apt remove package
 ```
 
 ---

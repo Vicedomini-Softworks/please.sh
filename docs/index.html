@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>please.sh - A Polite sudo Wrapper</title>
+  <title>please.sh - A Secure sudo Wrapper</title>
   <meta name="description" content="A sudo wrapper that asks permission first (from you, to your terminal)">
   <style>
     :root {
@@ -21,11 +21,7 @@
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: var(--font-sans);
@@ -35,23 +31,15 @@
       font-size: 16px;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
 
-    /* Header */
     header {
       text-align: center;
       padding: 80px 0 60px;
       background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     }
 
-    .logo {
-      font-size: 4rem;
-      margin-bottom: 16px;
-    }
+    .logo { font-size: 4rem; margin-bottom: 16px; }
 
     h1 {
       font-size: 3rem;
@@ -60,21 +48,10 @@
       letter-spacing: -0.02em;
     }
 
-    .tagline {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      font-weight: 400;
-    }
+    .tagline { font-size: 1.25rem; color: var(--text-secondary); font-weight: 400; }
 
-    /* Sections */
-    section {
-      padding: 60px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    section:last-of-type {
-      border-bottom: none;
-    }
+    section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
 
     h2 {
       font-size: 1.75rem;
@@ -85,12 +62,8 @@
       gap: 12px;
     }
 
-    p {
-      margin-bottom: 16px;
-      color: var(--text-secondary);
-    }
+    p { margin-bottom: 16px; color: var(--text-secondary); }
 
-    /* Code blocks */
     pre {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
@@ -111,12 +84,8 @@
       font-size: 0.875em;
     }
 
-    pre code {
-      background: none;
-      padding: 0;
-    }
+    pre code { background: none; padding: 0; }
 
-    /* Features list */
     .features {
       list-style: none;
       display: grid;
@@ -133,16 +102,9 @@
       gap: 16px;
     }
 
-    .features .emoji {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
+    .features .emoji { font-size: 1.5rem; flex-shrink: 0; }
+    .features strong { color: var(--accent); }
 
-    .features strong {
-      color: var(--accent);
-    }
-
-    /* Terminal demo */
     .terminal {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
@@ -158,12 +120,7 @@
       gap: 8px;
     }
 
-    .terminal-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
     .terminal-dot.red { background: #ff5f56; }
     .terminal-dot.yellow { background: #ffbd2e; }
     .terminal-dot.green { background: #27ca40; }
@@ -175,28 +132,14 @@
       line-height: 1.8;
     }
 
-    .terminal-prompt {
-      color: var(--accent);
-    }
+    .terminal-prompt { color: var(--accent); }
+    .terminal-output { color: var(--text-secondary); }
+    .terminal-success { color: var(--accent); }
+    .terminal-warning { color: var(--warning); }
+    .terminal-error { color: var(--error); }
 
-    .terminal-output {
-      color: var(--text-secondary);
-    }
-
-    .terminal-success {
-      color: var(--accent);
-    }
-
-    /* Installation steps */
-    .install-step {
-      margin-bottom: 32px;
-    }
-
-    .install-step h3 {
-      font-size: 1.25rem;
-      margin-bottom: 12px;
-      color: var(--text-primary);
-    }
+    .install-step { margin-bottom: 32px; }
+    .install-step h3 { font-size: 1.25rem; margin-bottom: 12px; color: var(--text-primary); }
 
     .warning {
       background: rgba(255, 166, 87, 0.1);
@@ -207,21 +150,35 @@
       color: var(--warning);
     }
 
-    /* Footer */
+    .card-grid {
+      display: grid;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .card strong { color: var(--accent); }
+
     footer {
       text-align: center;
       padding: 60px 0;
       color: var(--text-secondary);
     }
 
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     .quote {
       font-style: italic;
@@ -233,23 +190,11 @@
       border-left: 3px solid var(--accent);
     }
 
-    /* Responsive */
     @media (max-width: 640px) {
-      header {
-        padding: 48px 0 40px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .logo {
-        font-size: 3rem;
-      }
-
-      section {
-        padding: 40px 0;
-      }
+      header { padding: 48px 0 40px; }
+      h1 { font-size: 2rem; }
+      .logo { font-size: 3rem; }
+      section { padding: 40px 0; }
     }
   </style>
 </head>
@@ -266,22 +211,30 @@
     <section id="what-is-this">
       <div class="container">
         <h2>🙏 What is this?</h2>
-        <p><code>please</code> is a shell function that makes your terminal more polite. Instead of just running <code>sudo command</code>, you now run <code>please command</code> and your terminal will:</p>
+        <p><code>please</code> is a shell function that makes your terminal more polite <strong>and</strong> safer. Instead of just running <code>sudo command</code>, you now run <code>please command</code> and your terminal will:</p>
         <ol class="features" style="list-style: none;">
           <li>
-            <span class="emoji">🙏</span>
-            <span>Say <strong>"asking nicely..."</strong> before running your command</span>
+            <span class="emoji">⚠️</span>
+            <span>Show the exact command: <strong>"About to run: sudo ..."</strong> before executing</span>
+          </li>
+          <li>
+            <span class="emoji">✅</span>
+            <span><strong>Validate</strong> the command exists and block dangerous commands like <code>rm</code></span>
           </li>
           <li>
             <span class="emoji">✨</span>
-            <span>Say <strong>"success!"</strong> if it works</span>
+            <span>Say <strong>"Success!"</strong> if it works</span>
+          </li>
+          <li>
+            <span class="emoji">🛡️</span>
+            <span><strong>Protect</strong> with dry-run, confirmation prompts (<code>--confirm</code>), and timeouts</span>
           </li>
           <li>
             <span class="emoji">❌</span>
             <span>Say <strong>"that didn't work"</strong> if it fails (with helpful tips)</span>
           </li>
         </ol>
-        <p>It's sudo, but with manners.</p>
+        <p>It's sudo, but with manners <em>and</em> a safety net.</p>
       </div>
     </section>
 
@@ -298,12 +251,18 @@ source ~/.zshrc</code></pre>
         </div>
 
         <div class="install-step">
+          <h3>Config (optional, recommended)</h3>
+          <pre><code>curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/.please.config.example -o ~/.please.config</code></pre>
+          <p>Edit <code>~/.please.config</code> to set your safety rules.</p>
+        </div>
+
+        <div class="install-step">
           <h3>Or use the installer</h3>
           <pre><code>curl https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/install.sh | bash</code></pre>
         </div>
 
         <div class="warning">
-          ⚠️ <strong>Important:</strong> Edit <code>install.sh</code> and change the URL to wherever you host your script before running it!
+          ⚠️ <strong>Security Note:</strong> <code>rm</code> is blocked by default. Configure <code>PLEASE_DENYLIST</code> in <code>~/.please.config</code> to customize.
         </div>
       </div>
     </section>
@@ -324,10 +283,37 @@ source ~/.zshrc</code></pre>
           </div>
           <div class="terminal-body">
             <div><span class="terminal-prompt">$</span> please apt update</div>
-            <div class="terminal-output">🙏 asking nicely...</div>
+            <div class="terminal-output">⚠️ About to run: sudo apt update</div>
             <div class="terminal-output">[sudo] password for you:</div>
             <div class="terminal-output">...</div>
-            <div class="terminal-success">✨ success!</div>
+            <div class="terminal-success">✨ Success!</div>
+          </div>
+        </div>
+
+        <p>With safety features:</p>
+        <div class="terminal">
+          <div class="terminal-header">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="terminal-prompt">$</span> please --dryrun apt update</div>
+            <div class="terminal-output">⚠️ About to run: sudo apt update</div>
+            <div class="terminal-warning">➡️  Dry-run mode enabled. Not executing.</div>
+          </div>
+        </div>
+
+        <div class="terminal">
+          <div class="terminal-header">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="terminal-prompt">$</span> please rm -rf /</div>
+            <div class="terminal-error">❌ Command blocked by safety policy: rm</div>
+            <div class="terminal-output">   This command is in the deny list.</div>
           </div>
         </div>
       </div>
@@ -342,66 +328,142 @@ source ~/.zshrc</code></pre>
             <div><strong>Friendly vibes</strong><br>Your terminal should be nice to you</div>
           </li>
           <li>
+            <span class="emoji">🛡️</span>
+            <div><strong>Safety first</strong><br>Blocks dangerous commands by default, validates before executing</div>
+          </li>
+          <li>
             <span class="emoji">📢</span>
-            <div><strong>Clear feedback</strong><br>You always know if something worked or not</div>
+            <div><strong>Clear feedback</strong><br>You always know what's about to run and if it worked</div>
           </li>
           <li>
             <span class="emoji">🎓</span>
             <div><strong>Zero learning curve</strong><br>Just type <code>please</code> instead of <code>sudo</code></div>
           </li>
           <li>
-            <span class="emoji">😄</span>
-            <div><strong>Meme potential</strong><br>Tell your friends you "ask nicely" before running sudo commands</div>
-          </li>
-          <li>
             <span class="emoji">⚡</span>
-            <div><strong>Lightweight</strong><br>It's 28 lines of bash. That's it.</div>
+            <div><strong>Lightweight</strong><br>Minimal shell function, zero dependencies</div>
           </li>
         </ul>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <h2>🔒 Security Features</h2>
+        <div class="card-grid">
+          <div class="card">
+            <h3>🛑 Deny List</h3>
+            <p>Block dangerous commands like <code>rm</code>, <code>dd</code>, <code>shred</code> by default. Configure via <code>PLEASE_DENYLIST</code>.</p>
+          </div>
+          <div class="card">
+            <h3>✅ Allow List</h3>
+            <p>Restrict to only approved commands. Set <code>PLEASE_ALLOWLIST="apt,systemctl"</code> for locked-down environments.</p>
+          </div>
+          <div class="card">
+            <h3>🔍 Dry-Run</h3>
+            <p>Preview commands without executing: <code>please --dryrun apt update</code> or set <code>PLEASE_DRYRUN=1</code>.</p>
+          </div>
+          <div class="card">
+            <h3>👆 Confirmation</h3>
+            <p>Require typing <code>YES</code> before running: <code>please --confirm rm file</code> or set <code>PLEASE_CONFIRM=1</code>.</p>
+          </div>
+          <div class="card">
+            <h3>⏰ Timeout</h3>
+            <p>Prevent hanging commands with <code>PLEASE_TIMEOUT=30</code>. Falls back gracefully if <code>timeout</code> isn't available.</p>
+          </div>
+          <div class="card">
+            <h3>🔎 Command Validation</h3>
+            <p>Checks if the command exists before running sudo, with clear error messages.</p>
+          </div>
+        </div>
       </div>
     </section>
 
     <section id="how-it-works">
       <div class="container">
         <h2>🤔 How does it work?</h2>
-        <p>It's literally just a shell function:</p>
+        <p>It's a shell function that wraps <code>sudo</code> with validation and safety layers:</p>
+        <ol>
+          <li><strong>Validates</strong> the command exists on your system</li>
+          <li><strong>Checks</strong> against configured allowlist/denylist</li>
+          <li><strong>Previews</strong> the command: <code>⚠️ About to run: sudo apt update</code></li>
+          <li><strong>Protects</strong> with optional dry-run, confirmation (<code>Type 'YES' to execute</code>), and timeout</li>
+          <li><strong>Executes</strong> safely with <code>"$@"</code> preserving all arguments</li>
+        </ol>
         <pre><code>please() {
-  echo "🙏 asking nicely..."
-  sudo "$@"
-  # ... friendly feedback ...
+  command -v "$1"       # 1. exists?
+  check denylist        # 2. safe?
+  echo "About to run"   # 3. preview
+  read confirmation     # 4. confirm (optional)
+  sudo "$@"             # 5. execute
 }</code></pre>
-        <p>The <code>"$@"</code> preserves all your arguments, so <code>please apt update</code> becomes <code>sudo apt update</code> under the hood.</p>
+        <p>The <code>"$@"</code> preserves all your arguments, so <code>please apt update</code> becomes <code>sudo apt update</code> with perfect fidelity.</p>
+        <p>A <code>~/.please.config</code> file is sourced automatically if present to set your safety preferences.</p>
       </div>
     </section>
 
     <section id="customization">
       <div class="container">
         <h2>🛠️ Customization</h2>
-        <p>Want to change the messages? Edit <code>~/.please.sh</code>:</p>
+
+        <h3>🎨 Message Customization</h3>
+        <p>Edit <code>~/.please.sh</code> to change the output messages:</p>
         <pre><code># Make it sassier
 please() {
   [ $# -eq 0 ] && echo "🙄 I need a command, genius" && return 1
   echo "🥺 *puppy eyes* Running with sudo..."
   sudo "$@" && echo "🎉 you're welcome" || echo "💀 oopsie"
 }</code></pre>
+
+        <h3>⚙️ Config File (<code>~/.please.config</code>)</h3>
+        <pre><code># Block additional dangerous commands
+PLEASE_DENYLIST="rm,dd,shred,chmod"
+
+# Only allow safe commands (lockdown mode)
+PLEASE_ALLOWLIST="apt,systemctl,service"
+
+# Always confirm before executing
+PLEASE_CONFIRM=1
+
+# Preview everything without running
+PLEASE_DRYRUN=1
+
+# Kill commands that hang for 30+ seconds
+PLEASE_TIMEOUT=30</code></pre>
+
+        <h3>🌍 Environment Variables</h3>
+        <p>Set these in your <code>~/.zshrc</code> or <code>~/.bashrc</code> for persistent config:</p>
+        <pre><code>export PLEASE_CONFIRM=1
+export PLEASE_DRYRUN=0
+export PLEASE_TIMEOUT=30
+export PLEASE_DENYLIST="rm,dd,shred"
+export PLEASE_ALLOWLIST=""</code></pre>
       </div>
     </section>
 
     <section id="troubleshooting">
       <div class="container">
         <h2>🐛 Troubleshooting</h2>
-        <div style="display: grid; gap: 16px;">
-          <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+        <div class="card-grid">
+          <div class="card">
             <strong style="color: var(--text-primary);">Q: <code>please: command not found</code></strong>
             <p style="margin-bottom: 0;">A: Make sure you sourced the script or restarted your shell</p>
           </div>
-          <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+          <div class="card">
             <strong style="color: var(--text-primary);">Q: Still asking for password every time</strong>
             <p style="margin-bottom: 0;">A: That's sudo's behavior, not <code>please</code>. Configure <code>/etc/sudoers</code> if you want passwordless sudo</p>
           </div>
-          <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+          <div class="card">
             <strong style="color: var(--text-primary);">Q: Can I use this with fish/zsh/bash?</strong>
-            <p style="margin-bottom: 0;">A: Yes! It works in any POSIX shell that supports functions</p>
+            <p style="margin-bottom: 0;">A: Yes! Works in any POSIX shell that supports functions</p>
+          </div>
+          <div class="card">
+            <strong style="color: var(--text-primary);">Q: <code>rm</code> is blocked, how do I use it?</strong>
+            <p style="margin-bottom: 0;">A: Use <code>sudo rm</code> directly, or remove <code>rm</code> from <code>PLEASE_DENYLIST</code> in your config</p>
+          </div>
+          <div class="card">
+            <strong style="color: var(--text-primary);">Q: Confirmation prompt hangs in scripts</strong>
+            <p style="margin-bottom: 0;">A: <code>please</code> detects non-interactive mode and skips confirmation automatically</p>
           </div>
         </div>
       </div>

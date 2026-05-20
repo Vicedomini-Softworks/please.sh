@@ -1,0 +1,27 @@
+# ~/.please.config - Configuration for please.sh sudo wrapper
+#
+# This file allows you to configure safety features without editing the source
+# Delete lines or set values to empty string to disable features
+#
+# Format: PLEASE_VAR_NAME="value" (must use PLEASE_ prefix)
+# Comments start with #
+
+# Comma-separated list of commands allowed to run with sudo via please
+# Leave empty to allow all commands (BE CAREFUL!)
+PLEASE_ALLOWLIST=""
+
+# Comma-separated list of commands that are BLOCKED from running
+# This is your safety net - add dangerous commands here
+PLEASE_DENYLIST="rm"
+
+# Enable confirmation prompt for all commands (Y/n style)
+# Set to 1 to enable, 0 or leave empty to disable
+PLEASE_CONFIRM=0
+
+# Enable dry-run mode by default (show commands without executing)
+# Set to 1 to enable, 0 or leave empty to disable
+PLEASE_DRYRUN=0
+
+# Timeout in seconds for commands (prevent hanging)
+# Leave empty to disable
+PLEASE_TIMEOUT=30
