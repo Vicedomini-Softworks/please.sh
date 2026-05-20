@@ -3,8 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>please.sh - A Secure sudo Wrapper</title>
-  <meta name="description" content="A sudo wrapper that asks permission first (from you, to your terminal)">
+
+  <!-- Primary Meta Tags -->
+  <title>please.sh — A Polite Secure sudo Wrapper for Your Terminal</title>
+  <meta name="title" content="please.sh — A Polite Secure sudo Wrapper for Your Terminal">
+  <meta name="description" content="please.sh is a polite sudo wrapper that validates commands, blocks dangerous operations like rm, supports dry-run, confirmation prompts, and timeouts. Make your terminal safer with manners.">
+  <meta name="keywords" content="sudo wrapper, terminal safety, bash security, command validation, sudo alternative, polite sudo, shell function, linux security, macos terminal, prevent accidental rm, dry-run mode, open source, github">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Vicedomini Softworks">
+  <link rel="canonical" href="https://vicedomini-softworks.github.io/please.sh/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vicedomini-softworks.github.io/please.sh/">
+  <meta property="og:title" content="please.sh — A Polite Secure sudo Wrapper for Your Terminal">
+  <meta property="og:description" content="Command validation, denylist, dry-run, confirmation, and timeout — all wrapped in a polite sudo alternative. Open source and zero dependencies.">
+  <meta property="og:image" content="https://vicedomini-softworks.github.io/please.sh/og-image.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://vicedomini-softworks.github.io/please.sh/">
+  <meta property="twitter:title" content="please.sh — A Polite Secure sudo Wrapper for Your Terminal">
+  <meta property="twitter:description" content="Command validation, denylist, dry-run, confirmation, and timeout — all wrapped in a polite sudo alternative. Open source and zero dependencies.">
+  <meta property="twitter:image" content="https://vicedomini-softworks.github.io/please.sh/og-image.png">
+
+  <!-- JSON-LD Structured Data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "please.sh",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Linux, macOS, WSL",
+    "description": "A polite sudo wrapper with command validation, denylist, allowlist, dry-run mode, confirmation prompts, and timeout protection.",
+    "url": "https://vicedomini-softworks.github.io/please.sh/",
+    "author": {
+      "@type": "Organization",
+      "name": "Vicedomini Softworks"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/Vicedomini-Softworks/please.sh",
+    "downloadUrl": "https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/please.sh",
+    "softwareVersion": "2.0",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://vicedomini-softworks.github.io/please.sh/" }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data: WebSite with SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "please.sh",
+    "url": "https://vicedomini-softworks.github.io/please.sh/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://github.com/Vicedomini-Softworks/please.sh/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
   <style>
     :root {
       --bg-primary: #0d1117;
@@ -12,6 +89,7 @@
       --bg-tertiary: #21262d;
       --text-primary: #f0f6fc;
       --text-secondary: #8b949e;
+      --text-link: #58a6ff;
       --accent: #7ee787;
       --accent-hover: #aff5b4;
       --warning: #ffa657;
@@ -32,6 +110,25 @@
     }
 
     .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+
+    a { color: var(--text-link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      background: var(--bg-tertiary);
+      padding: 12px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .breadcrumb .container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb a { color: var(--text-link); }
+    .breadcrumb .separator { color: var(--text-secondary); }
+    .breadcrumb .current { color: var(--text-primary); }
 
     header {
       text-align: center;
@@ -60,6 +157,13 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: var(--text-primary);
     }
 
     p { margin-bottom: 16px; color: var(--text-secondary); }
@@ -167,9 +271,43 @@
       font-size: 1.1rem;
       margin-bottom: 8px;
       color: var(--text-primary);
+      margin-top: 0;
     }
 
     .card strong { color: var(--accent); }
+
+    .cta-banner {
+      text-align: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 40px 24px;
+      margin: 40px 0;
+    }
+
+    .cta-banner h3 {
+      font-size: 1.5rem;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .cta-banner p { margin-bottom: 24px; }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg-primary);
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .cta-button:hover {
+      background: var(--accent-hover);
+      text-decoration: none;
+    }
 
     footer {
       text-align: center;
@@ -177,7 +315,7 @@
       color: var(--text-secondary);
     }
 
-    footer a { color: var(--accent); text-decoration: none; }
+    footer a { color: var(--accent); }
     footer a:hover { text-decoration: underline; }
 
     .quote {
@@ -190,6 +328,19 @@
       border-left: 3px solid var(--accent);
     }
 
+    .repo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin: 0 4px;
+    }
+
     @media (max-width: 640px) {
       header { padding: 48px 0 40px; }
       h1 { font-size: 2rem; }
@@ -199,42 +350,67 @@
   </style>
 </head>
 <body>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="container">
+      <a href="https://vicedomini-softworks.github.io/please.sh/">Home</a>
+      <span class="separator">/</span>
+      <span class="current">please.sh — Polite sudo Wrapper</span>
+      <span style="margin-left: auto;">
+        <a class="repo-badge" href="https://github.com/Vicedomini-Softworks/please.sh" aria-label="View on GitHub" rel="noopener noreferrer">
+          <svg height="16" viewBox="0 0 16 16" width="16" fill="currentColor"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+          GitHub
+        </a>
+      </span>
+    </div>
+  </nav>
+
   <header>
     <div class="container">
-      <div class="logo">🙏</div>
+      <div class="logo" role="img" aria-label="Praying hands emoji representing polite request">🙏</div>
       <h1>please.sh</h1>
-      <p class="tagline">A sudo wrapper that asks permission first (from you, to your terminal)</p>
+      <p class="tagline">A polite <code>sudo</code> wrapper with built-in security — command validation, denylist, dry-run, confirmation, and timeout protection.</p>
     </div>
   </header>
 
   <main>
     <section id="what-is-this">
       <div class="container">
-        <h2>🙏 What is this?</h2>
-        <p><code>please</code> is a shell function that makes your terminal more polite <strong>and</strong> safer. Instead of just running <code>sudo command</code>, you now run <code>please command</code> and your terminal will:</p>
+        <h2>🙏 What Is please.sh?</h2>
+        <p><strong>please.sh</strong> is an open-source shell function that replaces <code>sudo</code> with a safer, friendlier alternative. Every command is validated against a configurable denylist before execution, and optional dry-run and confirmation modes help prevent costly mistakes.</p>
+        <p>Instead of typing <code>sudo command</code>, you type <code>please command</code> — and <strong>please.sh</strong> handles the rest:</p>
         <ol class="features" style="list-style: none;">
           <li>
-            <span class="emoji">⚠️</span>
-            <span>Show the exact command: <strong>"About to run: sudo ..."</strong> before executing</span>
+            <span class="emoji">🔎</span>
+            <span><strong>Command Validation</strong> — Checks the command exists <em>before</em> calling sudo</span>
+          </li>
+          <li>
+            <span class="emoji">🛑</span>
+            <span><strong>Denylist Protection</strong> — Dangerous commands like <code>rm</code> are blocked by default</span>
+          </li>
+          <li>
+            <span class="emoji">👁️</span>
+            <span><strong>Command Preview</strong> — Shows <code>⚠️ About to run: sudo ...</code> before executing</span>
+          </li>
+          <li>
+            <span class="emoji">🧪</span>
+            <span><strong>Dry-Run Mode</strong> — Preview without executing: <code>please --dryrun apt update</code></span>
           </li>
           <li>
             <span class="emoji">✅</span>
-            <span><strong>Validate</strong> the command exists and block dangerous commands like <code>rm</code></span>
+            <span><strong>Confirmation Prompts</strong> — Require typing <code>YES</code> before running risky commands</span>
+          </li>
+          <li>
+            <span class="emoji">⏰</span>
+            <span><strong>Timeout Protection</strong> — Kill hanging commands automatically with <code>PLEASE_TIMEOUT</code></span>
           </li>
           <li>
             <span class="emoji">✨</span>
-            <span>Say <strong>"Success!"</strong> if it works</span>
-          </li>
-          <li>
-            <span class="emoji">🛡️</span>
-            <span><strong>Protect</strong> with dry-run, confirmation prompts (<code>--confirm</code>), and timeouts</span>
-          </li>
-          <li>
-            <span class="emoji">❌</span>
-            <span>Say <strong>"that didn't work"</strong> if it fails (with helpful tips)</span>
+            <span><strong>Clear Feedback</strong> — Know instantly if a command succeeded or failed</span>
           </li>
         </ol>
-        <p>It's sudo, but with manners <em>and</em> a safety net.</p>
+        <p>It's <code>sudo</code> with manners — <em>and</em> a safety net.</p>
       </div>
     </section>
 
@@ -242,27 +418,21 @@
       <div class="container">
         <h2>📦 Installation</h2>
 
-        <div class="install-step">
-          <h3>Quick Install</h3>
-          <pre><code># Download and source it
+        <h3>Quick Install (One Liner)</h3>
+        <pre><code># Download and source please.sh
 curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/please.sh -o ~/.please.sh
 echo '[ -f "$HOME/.please.sh" ] && source "$HOME/.please.sh"' >> ~/.zshrc
 source ~/.zshrc</code></pre>
-        </div>
 
-        <div class="install-step">
-          <h3>Config (optional, recommended)</h3>
-          <pre><code>curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/.please.config.example -o ~/.please.config</code></pre>
-          <p>Edit <code>~/.please.config</code> to set your safety rules.</p>
-        </div>
+        <h3>Optional: Safety Config</h3>
+        <p>Create a <code>~/.please.config</code> file to customize your security rules:</p>
+        <pre><code>curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/.please.config.example -o ~/.please.config</code></pre>
 
-        <div class="install-step">
-          <h3>Or use the installer</h3>
-          <pre><code>curl https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/install.sh | bash</code></pre>
-        </div>
+        <h3>Or Use the Installer</h3>
+        <pre><code>curl https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/install.sh | bash</code></pre>
 
         <div class="warning">
-          ⚠️ <strong>Security Note:</strong> <code>rm</code> is blocked by default. Configure <code>PLEASE_DENYLIST</code> in <code>~/.please.config</code> to customize.
+          ⚠️ <strong>Security Note:</strong> <code>rm</code> is blocked by default. To unblock it, remove <code>rm</code> from <code>PLEASE_DENYLIST</code> in <code>~/.please.config</code>.
         </div>
       </div>
     </section>
@@ -270,12 +440,12 @@ source ~/.zshrc</code></pre>
     <section id="usage">
       <div class="container">
         <h2>🚀 Usage</h2>
-        <p>Instead of this:</p>
-        <pre><code>sudo apt update</code></pre>
-        <p>Do this:</p>
+
+        <h3>Basic Usage</h3>
+        <p>Replace <code>sudo</code> with <code>please</code>:</p>
         <pre><code>please apt update</code></pre>
 
-        <div class="terminal">
+        <div class="terminal" aria-label="Terminal demonstration of please.sh basic usage">
           <div class="terminal-header">
             <span class="terminal-dot red"></span>
             <span class="terminal-dot yellow"></span>
@@ -290,8 +460,11 @@ source ~/.zshrc</code></pre>
           </div>
         </div>
 
-        <p>With safety features:</p>
-        <div class="terminal">
+        <h3>Dry-Run Mode (Preview Without Executing)</h3>
+        <p>Use the <code>--dryrun</code> flag (or <code>-d</code>) to see what would happen:</p>
+        <pre><code>please --dryrun apt update</code></pre>
+
+        <div class="terminal" aria-label="Terminal demonstration of dry-run mode">
           <div class="terminal-header">
             <span class="terminal-dot red"></span>
             <span class="terminal-dot yellow"></span>
@@ -304,7 +477,10 @@ source ~/.zshrc</code></pre>
           </div>
         </div>
 
-        <div class="terminal">
+        <h3>Denylist in Action: Blocking Dangerous Commands</h3>
+        <p>By default, <code>rm</code> is blocked. This prevents accidental <code>rm -rf /</code> disasters:</p>
+
+        <div class="terminal" aria-label="Terminal demonstration of denylist blocking rm">
           <div class="terminal-header">
             <span class="terminal-dot red"></span>
             <span class="terminal-dot yellow"></span>
@@ -319,125 +495,140 @@ source ~/.zshrc</code></pre>
       </div>
     </section>
 
-    <section id="why">
-      <div class="container">
-        <h2>🎯 Why would I use this?</h2>
-        <ul class="features">
-          <li>
-            <span class="emoji">💬</span>
-            <div><strong>Friendly vibes</strong><br>Your terminal should be nice to you</div>
-          </li>
-          <li>
-            <span class="emoji">🛡️</span>
-            <div><strong>Safety first</strong><br>Blocks dangerous commands by default, validates before executing</div>
-          </li>
-          <li>
-            <span class="emoji">📢</span>
-            <div><strong>Clear feedback</strong><br>You always know what's about to run and if it worked</div>
-          </li>
-          <li>
-            <span class="emoji">🎓</span>
-            <div><strong>Zero learning curve</strong><br>Just type <code>please</code> instead of <code>sudo</code></div>
-          </li>
-          <li>
-            <span class="emoji">⚡</span>
-            <div><strong>Lightweight</strong><br>Minimal shell function, zero dependencies</div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
     <section id="features">
       <div class="container">
         <h2>🔒 Security Features</h2>
+
         <div class="card-grid">
           <div class="card">
-            <h3>🛑 Deny List</h3>
-            <p>Block dangerous commands like <code>rm</code>, <code>dd</code>, <code>shred</code> by default. Configure via <code>PLEASE_DENYLIST</code>.</p>
+            <h3>🛑 Denylist</h3>
+            <p>Block dangerous commands like <code>rm</code>, <code>dd</code>, and <code>shred</code>. Configurable via the <code>PLEASE_DENYLIST</code> environment variable or <code>~/.please.config</code>.</p>
           </div>
+
           <div class="card">
-            <h3>✅ Allow List</h3>
-            <p>Restrict to only approved commands. Set <code>PLEASE_ALLOWLIST="apt,systemctl"</code> for locked-down environments.</p>
+            <h3>✅ Allowlist</h3>
+            <p>Restrict <code>please</code> to only approved commands. Set <code>PLEASE_ALLOWLIST="apt,systemctl"</code> for locked-down environments or CI pipelines.</p>
           </div>
+
           <div class="card">
-            <h3>🔍 Dry-Run</h3>
-            <p>Preview commands without executing: <code>please --dryrun apt update</code> or set <code>PLEASE_DRYRUN=1</code>.</p>
+            <h3>🔍 Dry-Run Mode</h3>
+            <p>Preview the full sudo command without executing. Use the <code>--dryrun</code> flag or set <code>PLEASE_DRYRUN=1</code> to enable for all commands.</p>
           </div>
+
           <div class="card">
-            <h3>👆 Confirmation</h3>
-            <p>Require typing <code>YES</code> before running: <code>please --confirm rm file</code> or set <code>PLEASE_CONFIRM=1</code>.</p>
+            <h3>👆 Confirmation Prompt</h3>
+            <p>Require typing <code>YES</code> before any command runs. Use <code>--confirm</code> per-command or set <code>PLEASE_CONFIRM=1</code>. Skips automatically in non-interactive mode.</p>
           </div>
+
           <div class="card">
-            <h3>⏰ Timeout</h3>
-            <p>Prevent hanging commands with <code>PLEASE_TIMEOUT=30</code>. Falls back gracefully if <code>timeout</code> isn't available.</p>
+            <h3>⏰ Timeout Protection</h3>
+            <p>Prevent hanging commands with <code>PLEASE_TIMEOUT=30</code>. Automatically kills commands that exceed the limit. Falls back gracefully if the <code>timeout</code> utility isn't available.</p>
           </div>
+
           <div class="card">
             <h3>🔎 Command Validation</h3>
-            <p>Checks if the command exists before running sudo, with clear error messages.</p>
+            <p>Checks if the command exists on your system before running sudo, saving you from cryptic errors and providing clear feedback.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="how-it-works">
+    <section id="configuration">
       <div class="container">
-        <h2>🤔 How does it work?</h2>
-        <p>It's a shell function that wraps <code>sudo</code> with validation and safety layers:</p>
-        <ol>
-          <li><strong>Validates</strong> the command exists on your system</li>
-          <li><strong>Checks</strong> against configured allowlist/denylist</li>
-          <li><strong>Previews</strong> the command: <code>⚠️ About to run: sudo apt update</code></li>
-          <li><strong>Protects</strong> with optional dry-run, confirmation (<code>Type 'YES' to execute</code>), and timeout</li>
-          <li><strong>Executes</strong> safely with <code>"$@"</code> preserving all arguments</li>
-        </ol>
-        <pre><code>please() {
-  command -v "$1"       # 1. exists?
-  check denylist        # 2. safe?
-  echo "About to run"   # 3. preview
-  read confirmation     # 4. confirm (optional)
-  sudo "$@"             # 5. execute
-}</code></pre>
-        <p>The <code>"$@"</code> preserves all your arguments, so <code>please apt update</code> becomes <code>sudo apt update</code> with perfect fidelity.</p>
-        <p>A <code>~/.please.config</code> file is sourced automatically if present to set your safety preferences.</p>
+        <h2>⚙️ Configuration</h2>
+
+        <h3>Environment Variables</h3>
+        <p>Set these in your <code>~/.zshrc</code> or <code>~/.bashrc</code> for persistent configuration:</p>
+        <pre><code>export PLEASE_CONFIRM=1       # Require confirmation for every command
+export PLEASE_DRYRUN=0        # Disable dry-run by default
+export PLEASE_TIMEOUT=30      # Kill commands after 30 seconds
+export PLEASE_DENYLIST="rm,dd,shred"  # Block these commands
+export PLEASE_ALLOWLIST=""    # Empty = allow any (except denylist)</code></pre>
+
+        <h3>Config File (<code>~/.please.config</code>)</h3>
+        <p>Create a <code>~/.please.config</code> file for persistent settings:</p>
+        <pre><code># ~/.please.config
+PLEASE_DENYLIST="rm,dd,shred,chmod"
+PLEASE_ALLOWLIST="apt,systemctl,service"
+PLEASE_CONFIRM=1
+PLEASE_DRYRUN=0
+PLEASE_TIMEOUT=30</code></pre>
+
+        <h3>Command-Line Flags</h3>
+        <pre><code>please --help              # Show full help with all options
+please --dryrun apt update # Preview without executing
+please -d apt update       # Same as --dryrun (short form)
+please --confirm rm file   # Require YES confirmation
+please -c rm file          # Same as --confirm (short form)</code></pre>
       </div>
     </section>
 
-    <section id="customization">
+    <section id="why">
       <div class="container">
-        <h2>🛠️ Customization</h2>
+        <h2>🎯 Why Use please.sh?</h2>
+        <ul class="features">
+          <li>
+            <span class="emoji">💬</span>
+            <div><strong>Friendly Vibes</strong><br>Your terminal should be nice to you. Polite messages and clear feedback make every session better.</div>
+          </li>
+          <li>
+            <span class="emoji">🛡️</span>
+            <div><strong>Safety First</strong><br>Blocks dangerous commands by default, validates every command before execution, and supports dry-run previews.</div>
+          </li>
+          <li>
+            <span class="emoji">📢</span>
+            <div><strong>Clear Feedback</strong><br>You always know what's about to run and whether it succeeded — with helpful error messages on failure.</div>
+          </li>
+          <li>
+            <span class="emoji">🎓</span>
+            <div><strong>Zero Learning Curve</strong><br>Just type <code>please</code> instead of <code>sudo</code>. All arguments are preserved exactly as you'd expect.</div>
+          </li>
+          <li>
+            <span class="emoji">⚡</span>
+            <div><strong>Lightweight</strong><br>A single shell function with zero dependencies. Works on Linux, macOS, and WSL out of the box.</div>
+          </li>
+          <li>
+            <span class="emoji">🔓</span>
+            <div><strong>Open Source</strong><br>MIT licensed. Contribute, audit, or customize on <a href="https://github.com/Vicedomini-Softworks/please.sh">GitHub</a>.</div>
+          </li>
+        </ul>
+      </div>
+    </section>
 
-        <h3>🎨 Message Customization</h3>
-        <p>Edit <code>~/.please.sh</code> to change the output messages:</p>
-        <pre><code># Make it sassier
-please() {
-  [ $# -eq 0 ] && echo "🙄 I need a command, genius" && return 1
-  echo "🥺 *puppy eyes* Running with sudo..."
-  sudo "$@" && echo "🎉 you're welcome" || echo "💀 oopsie"
+    <section id="how-it-works">
+      <div class="container">
+        <h2>🤔 How It Works</h2>
+        <p><strong>please.sh</strong> is a simple shell function that wraps <code>sudo</code> with multiple safety layers:</p>
+        <ol>
+          <li><strong>Validates</strong> the command exists on your system</li>
+          <li><strong>Checks</strong> the command against your denylist and allowlist</li>
+          <li><strong>Previews</strong> the full sudo command: <code>⚠️ About to run: sudo apt update</code></li>
+          <li><strong>Optionally</strong> pauses for dry-run or confirmation</li>
+          <li><strong>Executes</strong> with timeout protection (if configured)</li>
+          <li><strong>Reports</strong> success or failure with the exit code</li>
+        </ol>
+        <pre><code>please() {
+  command -v "$1"        # 1. Does the command exist?
+  check denylist         # 2. Is it allowed?
+  echo "About to run"    # 3. Show what's happening
+  read confirmation      # 4. Ask for approval (optional)
+  timeout ... sudo "$@"  # 5. Execute with guardrails
+  report status          # 6. Tell you the result
 }</code></pre>
+        <p>The <code>"$@"</code> syntax preserves all your arguments exactly, so <code>please apt update</code> runs <code>sudo apt update</code> with perfect fidelity.</p>
+      </div>
+    </section>
 
-        <h3>⚙️ Config File (<code>~/.please.config</code>)</h3>
-        <pre><code># Block additional dangerous commands
-PLEASE_DENYLIST="rm,dd,shred,chmod"
-
-# Only allow safe commands (lockdown mode)
-PLEASE_ALLOWLIST="apt,systemctl,service"
-
-# Always confirm before executing
-PLEASE_CONFIRM=1
-
-# Preview everything without running
-PLEASE_DRYRUN=1
-
-# Kill commands that hang for 30+ seconds
-PLEASE_TIMEOUT=30</code></pre>
-
-        <h3>🌍 Environment Variables</h3>
-        <p>Set these in your <code>~/.zshrc</code> or <code>~/.bashrc</code> for persistent config:</p>
-        <pre><code>export PLEASE_CONFIRM=1
-export PLEASE_DRYRUN=0
-export PLEASE_TIMEOUT=30
-export PLEASE_DENYLIST="rm,dd,shred"
-export PLEASE_ALLOWLIST=""</code></pre>
+    <!-- Call to Action -->
+    <section id="get-started">
+      <div class="container">
+        <div class="cta-banner">
+          <h3>🚀 Get Started Now</h3>
+          <p>Download and source please.sh in under 30 seconds. No packages, no dependencies, no configuration required.</p>
+          <a class="cta-button" href="https://github.com/Vicedomini-Softworks/please.sh" rel="noopener noreferrer">
+            View on GitHub →
+          </a>
+        </div>
       </div>
     </section>
 
@@ -447,23 +638,27 @@ export PLEASE_ALLOWLIST=""</code></pre>
         <div class="card-grid">
           <div class="card">
             <strong style="color: var(--text-primary);">Q: <code>please: command not found</code></strong>
-            <p style="margin-bottom: 0;">A: Make sure you sourced the script or restarted your shell</p>
+            <p style="margin-bottom: 0;">A: Make sure you sourced the script or restarted your shell. Run <code>source ~/.zshrc</code> or open a new terminal.</p>
           </div>
           <div class="card">
-            <strong style="color: var(--text-primary);">Q: Still asking for password every time</strong>
-            <p style="margin-bottom: 0;">A: That's sudo's behavior, not <code>please</code>. Configure <code>/etc/sudoers</code> if you want passwordless sudo</p>
+            <strong style="color: var(--text-primary);">Q: Still asking for the sudo password every time</strong>
+            <p style="margin-bottom: 0;">A: That's <code>sudo</code>'s default behavior, not <strong>please.sh</strong>. Configure <code>/etc/sudoers</code> if you want passwordless sudo for specific commands.</p>
           </div>
           <div class="card">
-            <strong style="color: var(--text-primary);">Q: Can I use this with fish/zsh/bash?</strong>
-            <p style="margin-bottom: 0;">A: Yes! Works in any POSIX shell that supports functions</p>
+            <strong style="color: var(--text-primary);">Q: Can I use this with fish, zsh, or bash?</strong>
+            <p style="margin-bottom: 0;">A: Yes! <strong>please.sh</strong> works in any POSIX-compatible shell that supports functions — bash, zsh, dash, and more.</p>
           </div>
           <div class="card">
-            <strong style="color: var(--text-primary);">Q: <code>rm</code> is blocked, how do I use it?</strong>
-            <p style="margin-bottom: 0;">A: Use <code>sudo rm</code> directly, or remove <code>rm</code> from <code>PLEASE_DENYLIST</code> in your config</p>
+            <strong style="color: var(--text-primary);">Q: <code>rm</code> is blocked — how do I use it?</strong>
+            <p style="margin-bottom: 0;">A: Use <code>sudo rm</code> directly, or remove <code>rm</code> from <code>PLEASE_DENYLIST</code> in <code>~/.please.config</code>.</p>
           </div>
           <div class="card">
-            <strong style="color: var(--text-primary);">Q: Confirmation prompt hangs in scripts</strong>
-            <p style="margin-bottom: 0;">A: <code>please</code> detects non-interactive mode and skips confirmation automatically</p>
+            <strong style="color: var(--text-primary);">Q: The confirmation prompt hangs in scripts</strong>
+            <p style="margin-bottom: 0;">A: <strong>please.sh</strong> automatically detects non-interactive mode (piped input) and skips the confirmation prompt. Set <code>PLEASE_CONFIRM=0</code> to disable permanently.</p>
+          </div>
+          <div class="card">
+            <strong style="color: var(--text-primary);">Q: How do I contribute or report a bug?</strong>
+            <p style="margin-bottom: 0;">A: Open an issue or pull request on <a href="https://github.com/Vicedomini-Softworks/please.sh">GitHub</a>. The project is MIT licensed and welcomes contributions.</p>
           </div>
         </div>
       </div>
@@ -473,7 +668,7 @@ export PLEASE_ALLOWLIST=""</code></pre>
       <div class="container">
         <h2>📝 License</h2>
         <p><strong>MIT License</strong></p>
-        <p>Copyright (c) 2026 Vicedomini Softworks</p>
+        <p>Copyright &copy; 2026 <a href="https://vicedominisoftworks.com">Vicedomini Softworks</a></p>
         <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software.</p>
       </div>
     </section>
@@ -483,6 +678,13 @@ export PLEASE_ALLOWLIST=""</code></pre>
     <div class="container">
       <p>Made with 💖 and a tad of fun by <a href="https://vicedominisoftworks.com">Vicedomini Softworks</a></p>
       <p>Because terminals deserve kindness too.</p>
+      <p style="margin-top: 12px;">
+        <a href="https://github.com/Vicedomini-Softworks/please.sh">GitHub Repository</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/Vicedomini-Softworks/please.sh/issues">Report an Issue</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/Vicedomini-Softworks/please.sh/blob/main/LICENSE">MIT License</a>
+      </p>
       <div class="quote">
         "I used to be aggressive like you, but then I installed please.sh"<br>
         — Some terminal, probably

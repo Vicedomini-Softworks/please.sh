@@ -1,99 +1,205 @@
-# please.sh
+<div align="center">
 
-**A sudo wrapper that asks permission first (from you, to your terminal)**
+# 🙏 please.sh
+
+**A polite sudo wrapper with built-in security — command validation, denylist, dry-run, confirmation, and timeout protection**
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Shell](https://img.shields.io/badge/shell-POSIX-brightgreen)](https://en.wikipedia.org/wiki/POSIX)
+[![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS%20|%20WSL-lightgrey)](https://github.com/Vicedomini-Softworks/please.sh)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-please.sh-181717?logo=github)](https://github.com/Vicedomini-Softworks/please.sh)
+
+[Install](#-installation) · [Usage](#-usage) · [Security Features](#-security-features) · [Configuration](#%EF%B8%8F-configuration) · [GitHub](https://github.com/Vicedomini-Softworks/please.sh)
 
 ---
 
-## 🙏 What is this?
+</div>
 
-`please` is a shell function that makes your terminal more polite. Instead of just running `sudo command`, you now run `please command` and your terminal will:
+## 🙏 What Is please.sh?
 
-1. Say "⚠️ About to run: sudo ..." showing the exact command
-2. Say "✨ Success!" if it works or "❌ ..." with details if it fails
-3. Validates commands exist before running
-4. Blocks dangerous commands by default (like `rm`)
-5. Offers dry-run, confirmation, and timeout protection
+**please.sh** is an open-source shell function that replaces `sudo` with a safer, friendlier alternative. Every command is validated against a configurable denylist before execution, and optional dry-run and confirmation modes help prevent costly mistakes.
 
-It's sudo, but with manners.
+Instead of typing `sudo command`, you type `please command`:
+
+- 🔎 **Validates** the command exists before calling sudo
+- 🛑 **Blocks** dangerous commands like `rm` by default
+- 👁️ **Previews** the full command: `⚠️ About to run: sudo apt update`
+- 🧪 **Dry-Run** mode: preview without executing
+- ✅ **Confirmation** prompts: require typing `YES` to proceed
+- ⏰ **Timeout** protection: kill hanging commands automatically
+- ✨ **Clear feedback**: know instantly if it worked
+
+It's sudo with manners — *and* a safety net.
 
 ---
 
 ## 📦 Installation
 
-### Quick Install
+### Quick Install (One Liner)
 
 ```bash
-# Download and source it
+# Download and source please.sh
 curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/please.sh -o ~/.please.sh
 echo '[ -f "$HOME/.please.sh" ] && source "$HOME/.please.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-### Or use the installer
+### Optional: Safety Config
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/.please.config.example -o ~/.please.config
+```
+
+### Or Use the Installer
 
 ```bash
 curl https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/install.sh | bash
 ```
 
+> ⚠️ **Security Note:** `rm` is blocked by default. To unblock it, remove `rm` from `PLEASE_DENYLIST` in `~/.please.config`.
+
 ---
 
 ## 🚀 Usage
 
+### Basic Usage
+
+Replace `sudo` with `please`:
+
 ```bash
-# Instead of this:
-sudo apt update
-
-# Do this:
 please apt update
+```
 
-# Output:
-# 🙏 asking nicely...
-# [sudo] password for you:
-# ... command runs ...
-# ✨ success!
+```
+$ please apt update
+⚠️ About to run: sudo apt update
+[sudo] password for you:
+... output ...
+✨ Success!
+```
+
+### Dry-Run Mode (Preview Without Executing)
+
+```bash
+please --dryrun apt update
+please -d apt update
+```
+
+```
+$ please --dryrun apt update
+⚠️ About to run: sudo apt update
+➡️  Dry-run mode enabled. Not executing.
+```
+
+### Confirmation Mode
+
+```bash
+please --confirm rm file
+please -c rm file
+```
+
+```
+$ please --confirm rm file
+⚠️ About to run: sudo rm file
+⚠️  Type 'YES' to execute: YES
+... executes ...
+✨ Success!
+```
+
+### Denylist in Action
+
+```bash
+$ please rm -rf /
+❌ Command blocked by safety policy: rm
+   This command is in the deny list.
 ```
 
 ---
 
-## 🎯 Why would I use this?
+## 🔒 Security Features
 
-- **Friendly vibes**: Your terminal should be nice to you
-- **Clear feedback**: You always know if something worked or not
-- **Zero learning curve**: Just type `please` instead of `sudo`
-- **Meme potential**: Tell your friends you "ask nicely" before running sudo commands
-- **Lightweight**: Minimal shell function, zero dependencies
+| Feature | Description | How to Enable |
+|---------|-------------|---------------|
+| **Denylist** | Block dangerous commands (`rm`, `dd`, `shred`, etc.) | `PLEASE_DENYLIST="rm,dd"` or config file |
+| **Allowlist** | Restrict to approved commands only | `PLEASE_ALLOWLIST="apt,systemctl"` |
+| **Dry-Run** | Preview commands without executing | `please --dryrun` or `PLEASE_DRYRUN=1` |
+| **Confirmation** | Require typing `YES` to proceed | `please --confirm` or `PLEASE_CONFIRM=1` |
+| **Timeout** | Auto-kill hanging commands | `PLEASE_TIMEOUT=30` (seconds) |
+| **Command Validation** | Verify command exists before sudo | Always on |
 
 ---
 
-## 🤔 How does it work?
+## ⚙️ Configuration
 
-It's literally just a shell function that:
+### Environment Variables
 
-1. **Validates** your command exists
-2. **Secures** by checking allowlist/denylist
-3. **Previews** the sudo command: `⚠️ About to run: sudo apt update`
-4. **Protects** with dry-run, confirmation, and timeout options
-5. **Executes** safely with proper argument preservation
+Set these in your `~/.zshrc` or `~/.bashrc`:
+
+```bash
+export PLEASE_CONFIRM=1       # Require confirmation for every command
+export PLEASE_DRYRUN=0        # Disable dry-run by default
+export PLEASE_TIMEOUT=30      # Kill commands after 30 seconds
+export PLEASE_DENYLIST="rm,dd,shred"  # Block these commands
+export PLEASE_ALLOWLIST=""    # Empty = allow any (except denylist)
+```
+
+### Config File (`~/.please.config`)
+
+```bash
+# ~/.please.config
+PLEASE_DENYLIST="rm,dd,shred,chmod"
+PLEASE_ALLOWLIST="apt,systemctl,service"
+PLEASE_CONFIRM=1
+PLEASE_DRYRUN=0
+PLEASE_TIMEOUT=30
+```
+
+### Command-Line Flags
+
+```bash
+please --help              # Show full help
+please --dryrun apt update # Preview without executing
+please -d apt update       # Short form
+please --confirm rm file   # Require YES confirmation
+please -c rm file          # Short form
+```
+
+---
+
+## 🎯 Why Use please.sh?
+
+- **Friendly Vibes** — Your terminal should be nice to you. Polite messages and clear feedback.
+- **Safety First** — Blocks dangerous commands by default, validates before execution.
+- **Clear Feedback** — Know what's about to run and whether it succeeded.
+- **Zero Learning Curve** — Just type `please` instead of `sudo`. All arguments preserved.
+- **Lightweight** — Single shell function, zero dependencies. Works on Linux, macOS, and WSL.
+- **Open Source** — MIT licensed. [Contribute on GitHub](https://github.com/Vicedomini-Softworks/please.sh).
+
+---
+
+## 🤔 How It Works
+
+**please.sh** is a simple shell function that wraps `sudo` with multiple safety layers:
+
+1. **Validates** the command exists on your system
+2. **Checks** the command against your denylist and allowlist
+3. **Previews** the full sudo command
+4. **Optionally** pauses for dry-run or confirmation
+5. **Executes** with timeout protection (if configured)
+6. **Reports** success or failure with the exit code
 
 ```bash
 please() {
-  # Validates command exists
-  if ! command -v "${1%% *}" >/dev/null 2>&1; then ... fi
-  
-  # Checks denylist/allowlist for safety
-  if [ -n "$denylist" ] && echo "$denylist" | tr ',' '\n' | grep -qx "$cmd"; then ... fi
-  
-  # Shows: "⚠️ About to run: sudo apt update"
-  echo "⚠️ About to run: sudo $*"
-  
-  # Optional dry-run confirmation, timeout handling...
-  
-  sudo "$@"  # Safe argument forwarding with "$@"
-  # Returns proper exit code
+  command -v "$1"        # 1. Does the command exist?
+  check denylist         # 2. Is it allowed?
+  echo "About to run"    # 3. Show what's happening
+  read confirmation      # 4. Ask for approval (optional)
+  timeout ... sudo "$@"  # 5. Execute with guardrails
+  report status          # 6. Tell you the result
 }
 ```
 
-The `"$@"` preserves all your arguments, so `please apt update` becomes `sudo apt update` with perfect fidelity.
+The `"$@"` syntax preserves all arguments, so `please apt update` runs `sudo apt update` with perfect fidelity.
 
 ---
 
@@ -101,7 +207,7 @@ The `"$@"` preserves all your arguments, so `please apt update` becomes `sudo ap
 
 ### Quick Message Customization
 
-Want to change the messages? Edit `~/.please.sh`:
+Edit `~/.please.sh` to change the output messages:
 
 ```bash
 # Make it sassier
@@ -112,97 +218,33 @@ please() {
 }
 ```
 
-
-### Advanced Configuration with Safety Rules
-
-For **command restrictions, confirmations, and timeouts**, create `~/.please.config`:
-
-```bash
-# ~/.please.config - Safety rules for please.sh
-
-# Allow only specific commands (safer)
-PLEASE_ALLOWLIST="apt,systemctl,service"
-
-# Block dangerous commands
-PLEASE_DENYLIST="rm,dd,shred"
-
-# Always ask for confirmation
-PLEASE_CONFIRM=1
-
-# Enable dry-run mode by default
-PLEASE_DRYRUN=0
-
-# Timeout commands after 60 seconds
-PLEASE_TIMEOUT=60
-```
-
-Or use **environment variables** directly:
-
-```bash
-# Only allow specific commands
-export PLEASE_ALLOWLIST="apt,systemctl"
-
-# Always ask for confirmation
-export PLEASE_CONFIRM=1
-
-# Preview commands without executing
-export PLEASE_DRYRUN=1
-
-# Set a 30-second timeout
-export PLEASE_TIMEOUT=30
-```
-
-### Command Line Options
-
-```bash
-# Show command but don't execute
-please --dryrun apt update
-please -d apt update
-
-# Ask for confirmation before executing
-please --confirm apt install
-please -c apt install
-
-# Show help
-please --help
-```
-
-
-### Quick Command Examples
-
-```bash
-# Normal usage (original polite sudo)
-please ls -la
-
-# Preview without executing
-please --dryrun apt update
-
-# Require explicit confirmation
-please --confirm apt dist-upgrade
-
-# Enable confirm for all commands in session
-export PLEASE_CONFIRM=1
-please apt remove package
-```
-
 ---
 
 ## 🐛 Troubleshooting
 
 **Q: `please: command not found`**
-A: Make sure you sourced the script or restarted your shell
+A: Make sure you sourced the script or restarted your shell.
 
-**Q: Still asking for password every time**
-A: That's sudo's behavior, not `please`. Configure `/etc/sudoers` if you want passwordless sudo
+**Q: Still asking for the sudo password every time**
+A: That's sudo's behavior, not **please.sh**. Configure `/etc/sudoers` if you want passwordless sudo.
 
-**Q: Can I use this with fish/zsh/bash?**
-A: Yes! It works in any POSIX shell that supports functions
+**Q: Can I use this with fish, zsh, or bash?**
+A: Yes! It works in any POSIX-compatible shell — bash, zsh, dash, and more.
+
+**Q: `rm` is blocked — how do I use it?**
+A: Use `sudo rm` directly, or remove `rm` from `PLEASE_DENYLIST` in `~/.please.config`.
+
+**Q: The confirmation prompt hangs in scripts**
+A: **please.sh** automatically detects non-interactive mode and skips the confirmation prompt.
+
+**Q: How do I contribute or report a bug?**
+A: Open an issue or pull request on [GitHub](https://github.com/Vicedomini-Softworks/please.sh).
 
 ---
 
 ## 📝 License
 
-MIT License. Copyright (c) 2026 Vicedomini Softworks
+MIT License. Copyright © 2026 [Vicedomini Softworks](https://vicedominisoftworks.com)
 
 See [LICENSE](LICENSE) for details.
 
@@ -214,7 +256,15 @@ Made with 💖 and a tad of fun by [Vicedomini Softworks](https://vicedominisoft
 
 Because terminals deserve kindness too.
 
----
-
 > *"I used to be aggressive like you, but then I installed please.sh"*
 > — Some terminal, probably
+
+---
+
+<p align="center">
+  <a href="https://github.com/Vicedomini-Softworks/please.sh">GitHub Repository</a>
+  &nbsp;·&nbsp;
+  <a href="https://vicedomini-softworks.github.io/please.sh/">GitHub Pages Site</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/Vicedomini-Softworks/please.sh/issues">Report an Issue</a>
+</p>
