@@ -22,7 +22,7 @@ It's sudo, but with manners.
 
 ```bash
 # Download and source it
-curl -fsSL https://raw.githubusercontent.com/yourusername/please-sh/main/please.sh -o ~/.please.sh
+curl -fsSL https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/please.sh -o ~/.please.sh
 echo '[ -f "$HOME/.please.sh" ] && source "$HOME/.please.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```
@@ -30,11 +30,8 @@ source ~/.zshrc
 ### Or use the installer
 
 ```bash
-# Edit install.sh to point to your hosted script first!
-curl -fsSL https://raw.githubusercontent.com/yourusername/please-sh/main/install.sh | bash
+curl https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/install.sh | bash
 ```
-
-⚠️ **Important:** Edit `install.sh` and change the URL to wherever you host your script before running it!
 
 ---
 
@@ -112,7 +109,9 @@ A: Yes! It works in any POSIX shell that supports functions
 
 ## 📝 License
 
-Do whatever you want with it. It's 28 lines. Just don't claim it's yours.
+MIT License. Copyright (c) 2026 Vicedomini Softworks
+
+See [LICENSE](LICENSE) for details.
 
 ---
 
