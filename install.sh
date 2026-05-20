@@ -3,8 +3,7 @@ set -euo pipefail
 
 echo "✨ Installing 'please' (local install mode)..."
 
-# 👇 CHANGE THIS to your hosted script
-PLEASE_URL="https://example.com/please.sh"
+PLEASE_URL="https://raw.githubusercontent.com/Vicedomini-Softworks/please.sh/refs/heads/main/please.sh"
 
 PLEASE_FILE="$HOME/.please.sh"
 
