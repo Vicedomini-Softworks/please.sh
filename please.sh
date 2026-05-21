@@ -7,7 +7,7 @@
 please() {
   local dryrun=0
   local confirm=0
-  local status=0
+  local rc=0
   
   # Check if first arg is a flag (starting with -)
   if [ $# -gt 0 ] && [ "$1" != "${1#-}" ]; then
@@ -109,37 +109,37 @@ please() {
   if [ -n "${PLEASE_TIMEOUT:-}" ]; then
     if command -v timeout >/dev/null 2>&1; then
       timeout "${PLEASE_TIMEOUT}"s sudo "$@"
-      status=$?
+      rc=$?
     else
       echo "⚠️ timeout command not available, running without timeout"
       sudo "$@"
-      status=$?
+      rc=$?
     fi
     
     # Timeout exit codes: 124=timeout, 137=SIGKILL
-    if [ "$status" -eq 124 ] || [ "$status" -eq 137 ]; then
-      echo "⏰ Command timed out or was killed (exit code: $status)"
+    if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
+      echo "⏰ Command timed out or was killed (exit code: $rc)"
       return 1
     fi
   else
     sudo "$@"
-    status=$?
+    rc=$?
   fi
 
   # friendly feedback
-  if [ $status -eq 0 ]; then
+  if [ $rc -eq 0 ]; then
     echo "✨ Success!"
   else
-    case $status in
+    case $rc in
       1)
-        echo "❌ Command failed (exit code: $status)"
+        echo "❌ Command failed (exit code: $rc)"
         echo "💡 Tip: Check permissions or try running the command manually"
         ;;
       *)
-        echo "❌ Failed with exit code: $status"
+        echo "❌ Failed with exit code: $rc"
         ;;
     esac
   fi
 
-  return $status
+  return $rc
 }
